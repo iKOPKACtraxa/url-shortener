@@ -6,7 +6,7 @@ import (
 )
 
 func NewRandomString(size int) string {
-	// return uuid.NewString()[:i]//1
+	// return uuid.NewString()[:size] // 1
 	rnd := rand.New(rand.NewSource(time.Now().UnixNano()))
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 		"abcdefghijklmnopqrstuvwxyz" +

@@ -74,7 +74,7 @@ func TestSaveHandler(t *testing.T) {
 
 			input := fmt.Sprintf(`{"url": "%s", "alias": "%s"}`, tc.url, tc.alias)
 
-			req, err := http.NewRequest(http.MethodPost, "/url", bytes.NewReader([]byte(input))) // тут url или нет, никак не проверяется
+			req, err := http.NewRequest(http.MethodPost, "/url", bytes.NewReader([]byte(input)))
 			require.NoError(t, err)
 
 			rr := httptest.NewRecorder()

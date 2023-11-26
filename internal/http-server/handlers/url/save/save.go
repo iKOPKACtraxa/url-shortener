@@ -18,7 +18,8 @@ import (
 //go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=URLSaver
 
 type Request struct {
-	URL   string `json:"url" validate:"required,url"`
+	URL string `json:"url" validate:"required,url"`
+	// URL   string `json:"url" validate:"url"`
 	Alias string `json:"alias,omitempty"`
 }
 
@@ -52,16 +53,15 @@ func New(log *slog.Logger, urlSaver URLSaver) http.HandlerFunc {
 		log.Info("request body decoded", slog.Any("request", req))
 		if err := validator.New().Struct(req); err != nil {
 			log.Error("invalid request", sl.Err(err))
-			// render.JSON(w, r, resp.Error("invalid request"))//1
-			validateErr := err.(validator.ValidationErrors)      // 2
-			render.JSON(w, r, resp.ValidationError(validateErr)) // 2
+			validateErr := err.(validator.ValidationErrors)
+			render.JSON(w, r, resp.ValidationError(validateErr))
 			return
 		}
 		alias := req.Alias
 		if alias == "" {
-			alias = random.NewRandomString(aliasLenght)
+			alias = random.NewRandomString(aliasLenght) // TODO: random alias can be duplicated
 		}
-		id, err := urlSaver.SaveURL(req.URL, req.Alias)
+		id, err := urlSaver.SaveURL(req.URL, alias)
 		if err != nil {
 			if errors.Is(err, storage.ErrURLExists) {
 				log.Info("URL already exist", slog.String("URL", req.URL))

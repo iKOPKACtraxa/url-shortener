@@ -9,6 +9,8 @@ import (
 	"url-shortener/internal/lib/logger/sl"
 	"url-shortener/internal/storage/sqlite"
 
+	"url-shortener/internal/http-server/handlers/redirect"
+	"url-shortener/internal/http-server/handlers/url/delete"
 	"url-shortener/internal/http-server/handlers/url/save"
 	mwLogger "url-shortener/internal/http-server/middleware/logger"
 	"url-shortener/internal/lib/logger/handlers/slogpretty"
@@ -46,6 +48,8 @@ func main() {
 	router.Use(middleware.URLFormat)
 
 	router.Post("/url", save.New(log, storage))
+	router.Get("/{alias}", redirect.New(log, storage))
+	router.Delete("/url/{alias}", delete.New(log, storage))
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 
@@ -60,7 +64,7 @@ func main() {
 	if err := srv.ListenAndServe(); err != nil {
 		log.Error("failed to start server", sl.Err(err))
 	}
-	log.Error("server stopped", sl.Err(err)) // по идее дублирующее сообщение
+	log.Error("server stopped", sl.Err(err))
 }
 
 func setupLogger(env string) *slog.Logger {
