@@ -40,16 +40,16 @@ jobs:
       - name: Deploy to VM
         run: |
           sudo apt-get install -y ssh rsync
+          echo ${{ secrets.DEPLOY_SSH_KEY }} > deploy_key.pem
           echo "DEBUG1"
-          ls -la ${{ github.workspace }}
-          echo "$DEPLOY_SSH_KEY" > deploy_key.pem
+          ls -la deploy_key.pem
           echo "DEBUG2"
-          echo "$DEPLOY_SSH_KEY"
-          echo "DEBUG3"
           cat deploy_key.pem
           chmod 600 deploy_key.pem
+          echo "DEBUG3"
+          ls -la deploy_key.pem
           echo "DEBUG4"
-          ls -la ${{ github.workspace }}
+          cat deploy_key.pem
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "mkdir -p ${{ env.DEPLOY_DIRECTORY }}"
           rsync -avz -e 'ssh -i deploy_key.pem -o StrictHostKeyChecking=no' --exclude='.git' ./ ${{ env.HOST }}:${{ env.DEPLOY_DIRECTORY }}
         env:
