@@ -33,10 +33,10 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.21.4
-      # - name: Build app
-      #   run: |
-      #     go mod download
-      #     go build -o url-shortener ./cmd/url-shortener
+      - name: Build app
+        run: |
+          go mod download
+          go build -o url-shortener ./cmd/url-shortener
       - name: Deploy to VM
         run: |
           sudo apt-get install -y ssh rsync
@@ -62,9 +62,8 @@ jobs:
           echo 'HTTP_SERVER_PASSWORD=${{ secrets.AUTH_PASS }}' >> ${{ env.ENV_FILE_PATH }}"
       - name: Copy systemd service file
         run: |
-          # ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "mkdir -p /tmp/vv"           работает
           scp -i deploy_key.pem -o StrictHostKeyChecking=no -P ${{ env.PORT }} ${{ github.workspace }}/deployment/url-shortener.service ${{ env.HOST }}:/tmp/url-shortener.service
           ssh -t -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "sudo mv /tmp/url-shortener.service /etc/systemd/system/url-shortener.service"
-      # - name: Start application
-      #   run: |
-      #     ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "systemctl daemon-reload && systemctl restart url-shortener.service"
+      - name: Start application
+        run: |
+          ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "systemctl daemon-reload && systemctl restart url-shortener.service"
