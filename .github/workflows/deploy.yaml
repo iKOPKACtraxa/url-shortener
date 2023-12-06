@@ -64,7 +64,7 @@ jobs:
         run: |
           # ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "mkdir -p /tmp/vv"           работает
           scp -i deploy_key.pem -o StrictHostKeyChecking=no -P ${{ env.PORT }} ${{ github.workspace }}/deployment/url-shortener.service ${{ env.HOST }}:/tmp/url-shortener.service
-          ssh -t -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "mv /tmp/url-shortener.service /etc/systemd/system/url-shortener.service"
+          ssh -t -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "sudo mv /tmp/url-shortener.service /etc/systemd/system/url-shortener.service"
       # - name: Start application
       #   run: |
       #     ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "systemctl daemon-reload && systemctl restart url-shortener.service"
