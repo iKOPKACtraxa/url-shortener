@@ -33,23 +33,16 @@ jobs:
         uses: actions/setup-go@v2
         with:
           go-version: 1.21.4
-      - name: Build app
-        run: |
-          go mod download
-          go build -o url-shortener ./cmd/url-shortener
+      # - name: Build app
+      #   run: |
+      #     go mod download
+      #     go build -o url-shortener ./cmd/url-shortener
       - name: Deploy to VM
         run: |
           sudo apt-get install -y ssh rsync
-          echo ${{ secrets.DEPLOY_SSH_KEY }} > deploy_key.pem
-          echo "DEBUG1"
-          ls -la deploy_key.pem
-          echo "DEBUG2"
-          cat deploy_key.pem
-          chmod 600 deploy_key.pem
-          echo "DEBUG3"
-          ls -la deploy_key.pem
-          echo "DEBUG4"
-          cat deploy_key.pem
+          echo "$DEPLOY_SSH_KEY" > deploy_key.pem
+          # echo ${{ secrets.DEPLOY_SSH_KEY }} > deploy_key.pem
+          # chmod 600 deploy_key.pem
           ssh -i deploy_key.pem -o StrictHostKeyChecking=no ${{ env.HOST }} -p ${{ env.PORT }} "mkdir -p ${{ env.DEPLOY_DIRECTORY }}"
           rsync -avz -e 'ssh -i deploy_key.pem -o StrictHostKeyChecking=no' --exclude='.git' ./ ${{ env.HOST }}:${{ env.DEPLOY_DIRECTORY }}
         env:
